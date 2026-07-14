@@ -11,7 +11,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from .checkpoints import save_ternary_checkpoint
+from .checkpoints import freeze_ternary_weights, save_ternary_checkpoint
 from .data import DATASET_SPECS, create_loaders
 from .engine import evaluate_model, select_device, train_one_epoch
 from .models import build_resnet
@@ -90,11 +90,18 @@ def main() -> None:
             model, train_loader, optimizer, criterion, device
         )
         test_loss, test_accuracy = evaluate_model(model, test_loader, criterion, device)
+        ternary_model = freeze_ternary_weights(model).to(device)
+        ternary_test_loss, ternary_test_accuracy = evaluate_model(
+            ternary_model, test_loader, criterion, device
+        )
+        del ternary_model
         scheduler.step()
         print(
             f"epoch={epoch:02d}/{args.epochs:02d} "
             f"train_loss={train_loss:.4f} train_acc={train_accuracy:.2%} "
-            f"test_loss={test_loss:.4f} test_acc={test_accuracy:.2%}"
+            f"test_loss={test_loss:.4f} test_acc={test_accuracy:.2%} "
+            f"ternary_test_loss={ternary_test_loss:.4f} "
+            f"ternary_test_acc={ternary_test_accuracy:.2%}"
         )
     print(f"completed in {time.perf_counter() - started:.1f}s")
 

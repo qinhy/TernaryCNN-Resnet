@@ -60,6 +60,10 @@ option or both in the same run.
 Select a larger architecture with `--model r50` or `--model r101`. Run
 `uv run train-resnet --help` for all options.
 
+Each epoch reports test metrics for both the trainable QAT model (`test_loss`
+and `test_acc`) and the frozen `int8` inference model (`ternary_test_loss` and
+`ternary_test_acc`).
+
 Train each real dataset by selecting its name:
 
 ```bash
