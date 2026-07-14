@@ -85,6 +85,8 @@ def main() -> None:
     parameters = sum(parameter.numel() for parameter in model.parameters())
     print(f"device={device} dataset={args.dataset} model={args.model} parameters={parameters:,}")
     started = time.perf_counter()
+    best_test_accuracy = -1.0
+    best_ternary_test_accuracy = -1.0
     for epoch in range(1, args.epochs + 1):
         train_loss, train_accuracy = train_one_epoch(
             model, train_loader, optimizer, criterion, device
@@ -103,21 +105,31 @@ def main() -> None:
             f"ternary_test_loss={ternary_test_loss:.4f} "
             f"ternary_test_acc={ternary_test_accuracy:.2%}"
         )
-    print(f"completed in {time.perf_counter() - started:.1f}s")
-
-    if args.save:
-        args.save.parent.mkdir(parents=True, exist_ok=True)
-        torch.save(model.state_dict(), args.save)
-        print(f"saved {args.save}")
-    if args.save_ternary:
-        save_ternary_checkpoint(
-            model,
-            args.save_ternary,
-            model_name=args.model,
-            dataset=args.dataset,
-            width=args.width,
-        )
-        print(f"saved ternary weights {args.save_ternary}")
+        if test_accuracy > best_test_accuracy:
+            best_test_accuracy = test_accuracy
+            if args.save:
+                args.save.parent.mkdir(parents=True, exist_ok=True)
+                torch.save(model.state_dict(), args.save)
+                print(f"saved best trainable weights {args.save} test_acc={test_accuracy:.2%}")
+        if ternary_test_accuracy > best_ternary_test_accuracy:
+            best_ternary_test_accuracy = ternary_test_accuracy
+            if args.save_ternary:
+                save_ternary_checkpoint(
+                    model,
+                    args.save_ternary,
+                    model_name=args.model,
+                    dataset=args.dataset,
+                    width=args.width,
+                )
+                print(
+                    f"saved best ternary weights {args.save_ternary} "
+                    f"ternary_test_acc={ternary_test_accuracy:.2%}"
+                )
+    print(
+        f"completed in {time.perf_counter() - started:.1f}s "
+        f"best_test_acc={best_test_accuracy:.2%} "
+        f"best_ternary_test_acc={best_ternary_test_accuracy:.2%}"
+    )
 
 
 if __name__ == "__main__":

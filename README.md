@@ -55,14 +55,18 @@ uv run train-resnet --train-samples 0 --test-samples 0 --epochs 5 \
 future training. `--save-ternary` writes a frozen inference checkpoint whose
 quantized convolution and linear weights are stored as `int8` values in
 `{-1, 0, 1}`, together with their per-output-channel scales. You can use either
-option or both in the same run.
+option or both in the same run. During training, the files are updated only
+when their corresponding accuracy improves: the trainable checkpoint follows
+`test_acc`, while the frozen checkpoint follows `ternary_test_acc`. The two
+checkpoints may therefore represent different epochs.
 
 Select a larger architecture with `--model r50` or `--model r101`. Run
 `uv run train-resnet --help` for all options.
 
 Each epoch reports test metrics for both the trainable QAT model (`test_loss`
 and `test_acc`) and the frozen `int8` inference model (`ternary_test_loss` and
-`ternary_test_acc`).
+`ternary_test_acc`). The completion summary records `best_test_acc` and
+`best_ternary_test_acc` independently across all epochs.
 
 Train each real dataset by selecting its name:
 
