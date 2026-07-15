@@ -88,6 +88,22 @@ evaluation selects them automatically. Legacy trainable state dictionaries use
 the defaults unless matching `--dataset`, `--model`, and `--width` options are
 provided.
 
+## Results
+
+Evaluation results for the ternary models on 10,000 samples:
+
+| Dataset | Model | Ternary | Samples | Loss | Accuracy |
+| --- | --- | --- | ---: | ---: | ---: |
+| CIFAR-10 | ResNet-18 | Yes | 10,000 | 0.5631 | 93.75% |
+| CIFAR-10 | ResNet-50 | Yes | 10,000 | 0.4841 | 93.89% |
+| CIFAR-10 | ResNet-101 | Yes | 10,000 | 0.4723 | 94.44% |
+| CIFAR-100 | ResNet-18 | Yes | 10,000 | 2.8731 | 70.89% |
+| CIFAR-100 | ResNet-50 | Yes | 10,000 | 2.5014 | 73.00% |
+| CIFAR-100 | ResNet-101 | Yes | 10,000 | 2.3480 | 74.11% |
+| MNIST | ResNet-18 | Yes | 10,000 | 0.0152 | 99.58% |
+| MNIST | ResNet-50 | Yes | 10,000 | 0.0151 | 99.50% |
+| MNIST | ResNet-101 | Yes | 10,000 | 0.0153 | 99.57% |
+
 ## Test and lint
 
 ```bash
